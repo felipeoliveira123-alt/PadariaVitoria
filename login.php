@@ -3,6 +3,7 @@ session_start();
 include 'config/conexao.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    print_r($_POST);
     $email = $_POST['email'];
     $senha = md5($_POST['senha']);
 
@@ -12,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($resultado && $resultado->num_rows > 0) {
         $_SESSION['usuario'] = $email;
         $_SESSION['carrinho'] = [];
-        header("Location: ProdutosCaixa.php");
+        header("Location: vendas.php");
         exit;
     } else {
         echo "E-mail ou senha incorretos!";

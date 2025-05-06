@@ -2,7 +2,7 @@
 $host = "localhost";
 $usuario = "root";
 $senha = "";
-$banco = "Padaria"; // substitua pelo nome do seu banco de dados
+$banco = "panify"; // substitua pelo nome do seu banco de dados
 
 $conexao = new mysqli($host, $usuario, $senha, $banco);
 
