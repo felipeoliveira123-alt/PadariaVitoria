@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', async function() {
             const row = this.closest('tr');
             const productId = row.dataset.id;
+            let currentModal = null;
 
             try {
                 const response = await fetch(`produtos.php?id=${productId}`);
@@ -43,13 +44,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
 
                 document.getElementById('productModalTitle').textContent = 'Editar Produto';
-                const saveButton = document.getElementById('saveProduct');
-                saveButton.textContent = 'Confirmar';
+                document.getElementById('saveProduct').textContent = 'Confirmar';
                 
-                const modal = new bootstrap.Modal(document.getElementById('productModal'));
-                modal.show();
+                currentModal = new bootstrap.Modal(document.getElementById('productModal'));
+                currentModal.show();
 
-                saveButton.onclick = async function() {
+                // Add a one-time submit handler for editing
+                const form = document.getElementById('productForm');
+                const submitHandler = async function(e) {
+                    e.preventDefault();
+                    
+                    if (!this.checkValidity()) {
+                        e.stopPropagation();
+                        this.classList.add('was-validated');
+                        return;
+                    }
+
                     if (confirm('Tem certeza que deseja salvar as alterações?')) {
                         const productData = {
                             nome: document.getElementById('productName').value,
@@ -71,13 +81,15 @@ document.addEventListener('DOMContentLoaded', function() {
                             if (!response.ok) throw new Error('Erro ao atualizar produto');
 
                             showToast('Produto atualizado com sucesso!');
-                            modal.hide();
+                            currentModal.hide();
                             location.reload();
                         } catch (error) {
                             showAlert('Erro ao atualizar produto: ' + error.message, 'danger');
                         }
                     }
                 };
+
+                form.addEventListener('submit', submitHandler, { once: true });
             } catch (error) {
                 showAlert('Erro ao carregar produto: ' + error.message, 'danger');
             }

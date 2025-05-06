@@ -7,6 +7,7 @@
             </div>
             <div class="modal-body">
                 <form id="productForm" class="needs-validation" novalidate>
+                    <input type="hidden" id="isEditingProduct" name="isEditingProduct" value="0">
                     <div class="mb-3">
                         <label for="productName" class="form-label">Nome</label>
                         <input type="text" class="form-control" id="productName" name="nome" required>

@@ -5,8 +5,8 @@
     <title>Produtos - Padaria Vitória</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link rel="icon" type="image/png" href="images/Logotipo.png">
-    <link rel="stylesheet" href="/PadariaVitoria/css/produtos.css">
+    <link rel="icon" type="image/png" href="/PadariaVitoria/app/public/images/Logotipo.png">
+    <link rel="stylesheet" href="/PadariaVitoria/app/public/css/produtos.css">
 </head>
 
 <body class="bg-light">
@@ -37,6 +37,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/PadariaVitoria/js/produtos.js"></script>
+    <script src="/PadariaVitoria/app/public/js/produtos.js"></script>
 </body>
 </html>

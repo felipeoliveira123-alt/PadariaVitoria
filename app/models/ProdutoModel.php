@@ -31,6 +31,19 @@ class ProdutoModel {
         return $stmt->get_result()->fetch_assoc();
     }
 
+    public function buscarPorCodigoBarras($codigoBarras) {
+        $stmt = $this->conexao->prepare("
+            SELECT p.*, COALESCE(SUM(pl.quantidade), 0) as estoque_total
+            FROM produtos p
+            LEFT JOIN produto_lotes pl ON p.id = pl.produto_id AND pl.ativo = 1
+            WHERE p.codigo_barras = ? AND p.ativo = 1
+            GROUP BY p.id");
+        $stmt->bind_param("s", $codigoBarras);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc();
+    }
+
     public function criar($dados) {
         $stmt = $this->conexao->prepare("INSERT INTO produtos (nome, descricao, preco, codigo_barras, categoria) VALUES (?, ?, ?, ?, ?)");
         $stmt->bind_param("ssdss", 

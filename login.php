@@ -1,22 +1,25 @@
 <?php
 session_start();
-include 'config/conexao.php';
+require_once __DIR__ . '/config/conexao.php';
+require_once __DIR__ . '/app/controllers/AuthController.php';
+
+if (isset($_SESSION['usuario'])) {
+    header("Location: vendas.php");
+    exit;
+}
+
+$controller = new AuthController($conexao);
+$erro = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    print_r($_POST);
-    $email = $_POST['email'];
-    $senha = md5($_POST['senha']);
-
-    $sql = "SELECT * FROM usuarios WHERE email = '$email' AND senha = '$senha'";
-    $resultado = $conexao->query($sql);
-
-    if ($resultado && $resultado->num_rows > 0) {
-        $_SESSION['usuario'] = $email;
-        $_SESSION['carrinho'] = [];
-        header("Location: vendas.php");
+    $resultado = $controller->login($_POST['email'], $_POST['senha']);
+    
+    if ($resultado['status'] === 'success') {
+        header("Location: " . $resultado['redirect']);
         exit;
     } else {
-        echo "E-mail ou senha incorretos!";
+        $erro = $resultado['message'];
     }
 }
-?>
+
+require_once __DIR__ . '/app/views/auth/login.php';
