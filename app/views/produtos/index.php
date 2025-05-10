@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <title>Produtos - Padaria Vitória</title>
@@ -21,22 +22,27 @@
             </div>
         </div>
 
-        <div id="alertPlaceholder"></div>
-
-        <!-- Toast container -->
-        <?php include_once __DIR__ . '/components/toast.php'; ?>
+        <!-- Componente de filtros -->
+        <?php include_once __DIR__ . '/components/filtros_produtos.php'; ?>
 
         <!-- Modals -->
-        <?php 
+        <?php
         include_once __DIR__ . '/components/modal_produto.php';
         include_once __DIR__ . '/components/modal_lote.php';
         ?>
 
         <!-- Tabela de Produtos -->
         <?php include_once __DIR__ . '/components/tabela_produtos.php'; ?>
+
+        <!-- Paginação -->
+        <?php include_once __DIR__ . '/components/paginacao.php'; ?>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/PadariaVitoria/app/public/js/produtos.js"></script>
+
+    <!-- Incluir o componente de toast para mensagens PHP -->
+    <?php include_once __DIR__ . '/../components/toast_messages.php'; ?>
 </body>
+
 </html>

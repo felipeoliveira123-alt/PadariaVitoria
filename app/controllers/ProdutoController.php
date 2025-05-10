@@ -11,9 +11,19 @@ class ProdutoController {
         $this->loteModel = new LoteModel($conexao);
     }
 
-    public function index() {
-        $produtos = $this->produtoModel->listarTodos();
-        return ['response' => $produtos];
+    public function index($filtros = [], $pagina = 1, $itensPorPagina = 10) {
+        // Obter categorias para o filtro
+        $categorias = $this->produtoModel->listarCategorias();
+        
+        // Listar produtos com filtros e paginação
+        $resultado = $this->produtoModel->listarTodos($filtros, $pagina, $itensPorPagina);
+        
+        return [
+            'response' => $resultado['produtos'],
+            'categorias' => $categorias,
+            'paginacao' => $resultado['paginacao'],
+            'filtros' => $filtros
+        ];
     }
 
     public function show($id, $incluirLotes = false) {

@@ -33,17 +33,6 @@
             </div>
         </div>
 
-        <!-- Placeholder para alertas -->
-        <div id="alertPlaceholder" class="alert-dismissible"></div>
-
-        <?php if (isset($erro) && $erro): ?>
-            <div class="alert alert-danger alert-dismissible"><?= htmlspecialchars($erro) ?></div>
-        <?php endif; ?>
-
-        <?php if (isset($mensagem) && $mensagem): ?>
-            <div class="alert alert-primary alert-dismissible"><?= htmlspecialchars($mensagem) ?></div>
-        <?php endif; ?>
-
         <form method="POST" class="row g-3 mb-4">
             <div class="col-md-8">
                 <input type="text" name="codigo_barras" class="form-control"
@@ -80,6 +69,9 @@
     <!-- Incluir o script de produtos existente -->
     <script src="/PadariaVitoria/app/public/js/produtos.js"></script>
     
+    <!-- Incluir o componente de toast para mensagens PHP -->
+    <?php include_once __DIR__ . '/../components/toast_messages.php'; ?>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Configuração específica para o contexto do carrinho
@@ -96,14 +88,6 @@
                 });
             }
 
-            // Mostrar toast azul quando um produto for adicionado ao carrinho
-            function showCartToast(message) {
-                const toastElement = document.getElementById('cartToast');
-                const toastBody = toastElement.querySelector('.toast-body');
-                toastBody.textContent = message;
-                const toast = new bootstrap.Toast(toastElement);
-                toast.show();
-            }
 
             // Capturar o envio do formulário de adição ao carrinho
             const cartForm = document.querySelector('form.row.g-3.mb-4');
@@ -117,7 +101,6 @@
 
             // Verificar se um produto foi adicionado ao carrinho após o carregamento da página
             if (localStorage.getItem('addedToCart') === 'true') {
-                showCartToast('Produto adicionado ao carrinho!');
                 localStorage.removeItem('addedToCart');
             }
 
@@ -145,13 +128,10 @@
                         form.appendChild(input);
                         document.body.appendChild(form);
                         
-                        // Registrar que um item foi removido para mostrar o toast
-                        localStorage.setItem('removedFromCart', 'true');
-                        
                         form.submit();
                     } else {
                         console.error('ID do item não encontrado');
-                        alert('Não foi possível remover o item. ID do produto não encontrado.');
+                        showToast('Não foi possível remover o item. ID do produto não encontrado.', 'danger');
                     }
                 });
             });

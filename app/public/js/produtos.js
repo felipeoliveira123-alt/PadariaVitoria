@@ -176,43 +176,122 @@ document.addEventListener('DOMContentLoaded', function() {
             const row = this.closest('tr');
             const productId = row.dataset.id;
             
-            try {
-                const response = await fetch(`produtos.php?id=${productId}&lotes=true`);
-                if (!response.ok) throw new Error('Erro ao carregar lotes');
-                const data = await response.json();
-                
-                const batchTableBody = document.getElementById('batchTableBody');
-                batchTableBody.innerHTML = '';
-                
-                data.response.forEach(batch => {
-                    const tr = document.createElement('tr');
-                    const validityDate = new Date(batch.validade);
-                    tr.innerHTML = `
-                        <td>${batch.numero_lote}</td>
-                        <td>${batch.quantidade}</td>
-                        <td>${validityDate.toLocaleDateString('pt-BR')}</td>
-                        <td>
-                            <button class="btn btn-sm btn-danger delete-batch" data-batch-id="${batch.id}">
-                                <i class="bi bi-trash-fill"></i>
-                            </button>
-                        </td>
-                    `;
-                    batchTableBody.appendChild(tr);
+            // Function to load batches and update UI
+            async function loadBatches(productId, batchModal) {
+                try {
+                    const response = await fetch(`produtos.php?id=${productId}&lotes=true`);
+                    if (!response.ok) throw new Error('Erro ao carregar lotes');
+                    const data = await response.json();
+                    
+                    const batchTableBody = document.getElementById('batchTableBody');
+                    batchTableBody.innerHTML = '';
+                    
+                    if (data.response && data.response.length > 0) {
+                        data.response.forEach(batch => {
+                            const tr = document.createElement('tr');
+                            tr.dataset.id = batch.id;
+                            // Use date string without timezone conversion for display
+                            // The format YYYY-MM-DD works correctly with the Date constructor
+                            const dateStr = batch.validade.split('T')[0];
+                            const validityDate = new Date(dateStr + 'T12:00:00'); // Adding noon time to avoid timezone issues
+                            tr.innerHTML = `
+                                <td>${batch.numero_lote}</td>
+                                <td>${batch.quantidade}</td>
+                                <td>${validityDate.toLocaleDateString('pt-BR')}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-danger delete-batch" data-batch-id="${batch.id}">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </td>
+                            `;
+                            batchTableBody.appendChild(tr);
+                        });
+                        
+                        // Reattach delete handlers to new buttons
+                        setupBatchDeletionHandlers(productId, batchModal);
+                    } else {
+                        // Show a message when there are no batches
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = '<td colspan="4" class="text-center">Nenhum lote encontrado para este produto.</td>';
+                        batchTableBody.appendChild(tr);
+                    }
+                    
+                    return data.response || [];
+                } catch (error) {
+                    showToast('Erro ao carregar lotes: ' + error.message, 'danger');
+                    return [];
+                }
+            }
+            
+            // Function to set up batch deletion handlers
+            function setupBatchDeletionHandlers(productId, batchModal) {
+                document.querySelectorAll('.delete-batch').forEach(deleteBtn => {
+                    deleteBtn.addEventListener('click', async function(e) {
+                        e.preventDefault();
+                        const batchId = this.dataset.batchId;
+                        const row = this.closest('tr');
+                        
+                        if (confirm('Tem certeza que deseja excluir este lote?')) {
+                            try {
+                                const response = await fetch(`produtos.php?id=${productId}&lote_id=${batchId}`, {
+                                    method: 'DELETE'
+                                });
+                                
+                                if (!response.ok) throw new Error('Erro ao excluir lote');
+                                
+                                // Remove the row directly without reloading the page
+                                row.remove();
+                                
+                                // Show success message
+                                showToast('Lote excluído com sucesso!', 'success');
+                                
+                                // If table is now empty, refresh the entire modal content
+                                if (document.querySelectorAll('#batchTableBody tr').length === 0) {
+                                    await loadBatches(productId, batchModal);
+                                }
+                            } catch (error) {
+                                showToast('Erro ao excluir lote: ' + error.message, 'danger');
+                            }
+                        }
+                    });
                 });
+            }
+            
+            const batchModal = new bootstrap.Modal(document.getElementById('batchModal'));
+            batchModal.show();
+            
+            // Load batches first time
+            await loadBatches(productId, batchModal);
+            
+            // Set up batch form submission
+            const batchForm = document.getElementById('batchForm');
+            if (batchForm) {
+                // Remove any existing event listeners to prevent duplicates
+                const newBatchForm = batchForm.cloneNode(true);
+                batchForm.parentNode.replaceChild(newBatchForm, batchForm);
                 
-                const batchModal = new bootstrap.Modal(document.getElementById('batchModal'));
-                batchModal.show();
-                
-                // Set up batch form submission
-                document.getElementById('batchForm').onsubmit = async function(e) {
+                newBatchForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
                     
+                    // Create a reference to form elements that won't change during async operations
+                    const numeroLote = document.getElementById('newBatchNumber').value;
+                    const quantidade = parseInt(document.getElementById('newBatchQuantity').value);
+                    const validade = document.getElementById('newBatchValidity').value;
+                    
+                    // Validate form
+                    if (!numeroLote || !quantidade || !validade) {
+                        showToast('Por favor, preencha todos os campos do lote', 'warning');
+                        return;
+                    }
+                    
+                    // Ensure the date is sent in YYYY-MM-DD format without timezone adjustment
                     const batchData = {
                         tipo: 'lote',
                         produto_id: productId,
-                        numero_lote: document.getElementById('newBatchNumber').value,
-                        quantidade: parseInt(document.getElementById('newBatchQuantity').value),
-                        validade: document.getElementById('newBatchValidity').value
+                        numero_lote: numeroLote,
+                        quantidade: quantidade,
+                        validade: validade, // Use the date string exactly as entered by user
+                        preserve_date: true // Flag to tell server not to adjust for timezone
                     };
                     
                     try {
@@ -226,37 +305,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         if (!response.ok) throw new Error('Erro ao criar lote');
                         
-                        showAlert('Lote adicionado com sucesso!', 'success');
-                        location.reload();
+                        // Reset form
+                        this.reset();
+                        
+                        // Reload batches to show the new one
+                        await loadBatches(productId, batchModal);
+                        
+                        showToast('Lote adicionado com sucesso!', 'success');
                     } catch (error) {
-                        showAlert('Erro ao adicionar lote: ' + error.message, 'danger');
+                        showToast('Erro ao adicionar lote: ' + error.message, 'danger');
                     }
-                };
-                
-                // Handle batch deletion
-                document.querySelectorAll('.delete-batch').forEach(deleteBtn => {
-                    deleteBtn.addEventListener('click', async function() {
-                        if (confirm('Tem certeza que deseja excluir este lote?')) {
-                            const batchId = this.dataset.batchId;
-                            try {
-                                const response = await fetch(`produtos.php?id=${productId}&lote_id=${batchId}`, {
-                                    method: 'DELETE'
-                                });
-                                
-                                if (!response.ok) throw new Error('Erro ao excluir lote');
-                                
-                                showAlert('Lote excluído com sucesso!', 'success');
-                                this.closest('tr').remove();
-                                location.reload();
-                            } catch (error) {
-                                showAlert('Erro ao excluir lote: ' + error.message, 'danger');
-                            }
-                        }
-                    });
                 });
-                
-            } catch (error) {
-                showAlert('Erro ao carregar lotes: ' + error.message, 'danger');
             }
         });
     });
@@ -275,10 +334,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     if (!response.ok) throw new Error('Erro ao excluir produto');
 
-                    showAlert('Produto excluído com sucesso!', 'success');
+                    // Remove the row directly without refreshing the page
                     row.remove();
+                    
+                    // Show success message
+                    showToast('Produto excluído com sucesso!', 'success');
+                    
+                    // If table is now empty, show a message
+                    const tableBody = row.parentElement;
+                    if (tableBody.children.length === 0) {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = '<td colspan="8" class="text-center">Nenhum produto encontrado.</td>';
+                        tableBody.appendChild(tr);
+                    }
                 } catch (error) {
-                    showAlert('Erro ao excluir produto: ' + error.message, 'danger');
+                    showToast('Erro ao excluir produto: ' + error.message, 'danger');
                 }
             }
         });

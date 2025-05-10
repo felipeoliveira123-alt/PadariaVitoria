@@ -24,7 +24,22 @@ try {
             echo json_encode($controller->show($_GET['id']));
             exit;
         } else {
-            $produtos = $controller->index();
+            // Obter parâmetros de filtro
+            $filtros = [
+                'nome' => $_GET['filtro_nome'] ?? '',
+                'categoria' => $_GET['filtro_categoria'] ?? '',
+                'estoque_min' => $_GET['filtro_estoque_min'] ?? null,
+                'estoque_max' => $_GET['filtro_estoque_max'] ?? null
+            ];
+            
+            // Parâmetros de paginação
+            $pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+            $itensPorPagina = isset($_GET['itens_por_pagina']) ? (int)$_GET['itens_por_pagina'] : 10;
+            
+            // Limitar itens por página entre 5 e 50
+            $itensPorPagina = max(5, min(50, $itensPorPagina));
+            
+            $produtos = $controller->index($filtros, $pagina, $itensPorPagina);
         }
     } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $dadosJson = file_get_contents('php://input');
