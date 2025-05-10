@@ -186,10 +186,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 data.response.forEach(batch => {
                     const tr = document.createElement('tr');
+                    const validityDate = new Date(batch.validade);
                     tr.innerHTML = `
                         <td>${batch.numero_lote}</td>
                         <td>${batch.quantidade}</td>
-                        <td>${new Date(batch.validade).toLocaleDateString('pt-BR')}</td>
+                        <td>${validityDate.toLocaleDateString('pt-BR')}</td>
                         <td>
                             <button class="btn btn-sm btn-danger delete-batch" data-batch-id="${batch.id}">
                                 <i class="bi bi-trash-fill"></i>
