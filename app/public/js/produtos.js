@@ -1,6 +1,22 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Check for success message in sessionStorage
+    const successMessage = sessionStorage.getItem('productUpdateMessage');
+    if (successMessage) {
+        showToast(successMessage);
+        sessionStorage.removeItem('productUpdateMessage');
+    }
+
     function showAlert(message, type) {
-        const alertPlaceholder = document.getElementById('alertPlaceholder');
+        let alertPlaceholder = document.getElementById('alertPlaceholder');
+        if (!alertPlaceholder) {
+            // Create the alert placeholder if it doesn't exist
+            alertPlaceholder = document.createElement('div');
+            alertPlaceholder.id = 'alertPlaceholder';
+            // Insert it at the top of the main content area
+            const mainContent = document.querySelector('main') || document.body;
+            mainContent.insertBefore(alertPlaceholder, mainContent.firstChild);
+        }
+
         const wrapper = document.createElement('div');
         wrapper.innerHTML = `
             <div class="alert alert-${type} alert-dismissible" role="alert">
@@ -13,9 +29,35 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showToast(message) {
-        const toastElement = document.getElementById('productToast');
+        let toastElement = document.getElementById('productToast');
+        if (!toastElement) {
+            // Create toast container if it doesn't exist
+            let container = document.querySelector('.toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.className = 'toast-container position-fixed top-0 end-0 p-3';
+                document.body.appendChild(container);
+            }
+            
+            // Create toast element
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = `
+                <div id="productToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header bg-success text-white">
+                        <strong class="me-auto">Sucesso</strong>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body"></div>
+                </div>
+            `;
+            container.appendChild(wrapper);
+            toastElement = document.getElementById('productToast');
+        }
+
         const toastBody = toastElement.querySelector('.toast-body');
-        toastBody.textContent = message;
+        if (toastBody) {
+            toastBody.textContent = message;
+        }
         const toast = new bootstrap.Toast(toastElement);
         toast.show();
     }
@@ -49,7 +91,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 currentModal = new bootstrap.Modal(document.getElementById('productModal'));
                 currentModal.show();
 
-                // Add a one-time submit handler for editing
                 const form = document.getElementById('productForm');
                 const submitHandler = async function(e) {
                     e.preventDefault();
@@ -80,15 +121,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
                             if (!response.ok) throw new Error('Erro ao atualizar produto');
 
-                            showToast('Produto atualizado com sucesso!');
                             currentModal.hide();
+                            sessionStorage.setItem('productUpdateMessage', 'Produto atualizado com sucesso!');
                             location.reload();
                         } catch (error) {
                             showAlert('Erro ao atualizar produto: ' + error.message, 'danger');
                         }
                     }
                 };
-
+                
                 form.addEventListener('submit', submitHandler, { once: true });
             } catch (error) {
                 showAlert('Erro ao carregar produto: ' + error.message, 'danger');
@@ -142,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error(errorData.error || 'Erro ao criar produto');
             }
 
-            showAlert('Produto criado com sucesso!', 'success');
+            sessionStorage.setItem('productUpdateMessage', 'Produto criado com sucesso!');
             const modal = bootstrap.Modal.getInstance(document.getElementById('productModal'));
             modal.hide();
             location.reload();
@@ -341,11 +382,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     showToast('Produto excluído com sucesso!', 'success');
                     
                     // If table is now empty, show a message
-                    const tableBody = row.parentElement;
-                    if (tableBody.children.length === 0) {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = '<td colspan="8" class="text-center">Nenhum produto encontrado.</td>';
-                        tableBody.appendChild(tr);
+                    const tbody = document.querySelector('.table tbody');
+                    if (tbody && tbody.children.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="8" class="text-center">Nenhum produto encontrado.</td></tr>';
                     }
                 } catch (error) {
                     showToast('Erro ao excluir produto: ' + error.message, 'danger');
