@@ -3,19 +3,34 @@ session_start();
 include 'config/conexao.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = $_POST['email'];
-    $senha = md5($_POST['senha']);
+    $usuario = $_POST['usuario'];
+    $senha = $_POST['senha'];
 
-    $sql = "SELECT * FROM usuarios WHERE email = '$email' AND senha = '$senha'";
-    $resultado = $conexao->query($sql);
+    // Prepared statement para evitar SQL injection
+    $stmt = $conexao->prepare("SELECT * FROM usuarios WHERE usuario = ? AND senha = ?");
+    $stmt->bind_param("ss", $usuario, $senha);
+    $stmt->execute();
+    $resultado = $stmt->get_result();
 
     if ($resultado && $resultado->num_rows > 0) {
-        $_SESSION['usuario'] = $email;
+        $_SESSION['usuario'] = $usuario;
         $_SESSION['carrinho'] = [];
-        header("Location: ProdutosCaixa.php");
+
+        // Se o checkbox "lembrar_login" estiver marcado
+        if (isset($_POST['lembrar_login'])) {
+            setcookie('usuario_salvo', $usuario, time() + (86400 * 30), "/"); // 30 dias
+            setcookie('senha_salva', $senha, time() + (86400 * 30), "/");
+        } else {
+            // Remove cookies se não marcado
+            setcookie('usuario_salvo', '', time() - 3600, "/");
+            setcookie('senha_salva', '', time() - 3600, "/");
+        }
+
+        header("Location: Menu.php");
         exit;
     } else {
-        echo "E-mail ou senha incorretos!";
+        header("Location: index.php?erro=1");
+        exit;
     }
 }
 ?>

@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Carrinho de Compras</h2>
-        <a href="logout.php" class="btn btn-outline-danger">Sair</a>
+        <a href="index.php" class="btn btn-outline-danger">Sair</a>
     </div>
 
     <?php if ($erro): ?>
