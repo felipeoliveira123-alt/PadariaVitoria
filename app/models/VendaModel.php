@@ -151,6 +151,28 @@ class VendaModel {
     }
     
     /**
+     * Converte data do formato brasileiro (DD/MM/AAAA) para o formato MySQL (AAAA-MM-DD)
+     * @param string $data Data no formato DD/MM/AAAA
+     * @return string Data no formato AAAA-MM-DD ou string vazia se inválida
+     */
+    private function converterDataParaMySQL($data) {
+        if (empty($data)) return '';
+        
+        // Verifica se está no formato esperado
+        if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $data)) {
+            $partes = explode('/', $data);
+            return $partes[2] . '-' . $partes[1] . '-' . $partes[0]; // AAAA-MM-DD
+        }
+        
+        // Se já estiver no formato MySQL (AAAA-MM-DD), retorna como está
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $data)) {
+            return $data;
+        }
+        
+        return '';
+    }
+
+    /**
      * Lista todas as vendas realizadas com suporte a filtros e paginação
      * @param array $filtros - filtros aplicados (data_inicio, data_fim, vendedor, valor_min, valor_max)
      * @param int $pagina - página atual
@@ -233,8 +255,7 @@ class VendaModel {
         
         $stmt->execute();
         $vendas = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-        
-        return [
+          return [
             'vendas' => $vendas,
             'paginacao' => [
                 'pagina_atual' => $pagina,
@@ -244,15 +265,15 @@ class VendaModel {
             ]
         ];
     }
-    
-    /**
+      /**
      * Busca uma venda pelo ID com seus itens
      * @param int $id - ID da venda
      * @return array - dados da venda e seus itens
-     */
-    public function buscarVendaPorId($id) {        // Buscar a venda
+     */    public function buscarVendaPorId($id) {
+        // Como o id recebido vem da view vw_relatorio_vendas, ele é o campo venda_id da view
+        // que na verdade é o id da tabela vendas. Então podemos usar diretamente:
         $stmt = $this->conexao->prepare("
-            SELECT v.*, u.nome as usuario_nome
+            SELECT v.*, u.nome_completo as usuario_nome
             FROM vendas v
             JOIN usuarios u ON v.usuario_id = u.id
             WHERE v.id = ?

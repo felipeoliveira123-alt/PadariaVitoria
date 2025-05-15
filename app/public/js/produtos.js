@@ -297,8 +297,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 });
             }
-            
-            const batchModal = new bootstrap.Modal(document.getElementById('batchModal'));
+              const batchModal = new bootstrap.Modal(document.getElementById('batchModal'));
             batchModal.show();
             
             // Load batches first time
@@ -313,14 +312,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 newBatchForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
-                    
-                    // Create a reference to form elements that won't change during async operations
+                      // Create a reference to form elements that won't change during async operations
                     const numeroLote = document.getElementById('newBatchNumber').value;
                     const quantidade = parseInt(document.getElementById('newBatchQuantity').value);
-                    const validade = document.getElementById('newBatchValidity').value;
+                    const validadeInput = document.getElementById('newBatchValidity').value;
                     
                     // Validate form
-                    if (!numeroLote || !quantidade || !validade) {
+                    if (!numeroLote || !quantidade || !validadeInput) {
                         showToast('Por favor, preencha todos os campos do lote', 'warning');
                         return;
                     }
@@ -331,7 +329,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         produto_id: productId,
                         numero_lote: numeroLote,
                         quantidade: quantidade,
-                        validade: validade, // Use the date string exactly as entered by user
+                        validade: validade, // Now correctly formatted as yyyy-mm-dd
                         preserve_date: true // Flag to tell server not to adjust for timezone
                     };
                     

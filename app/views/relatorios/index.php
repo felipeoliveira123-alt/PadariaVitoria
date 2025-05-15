@@ -86,8 +86,6 @@
                 </div>
                 <div class="card-body">
                     <?php if (!empty($vendas)): ?>
-                        <!-- Paginação (topo) -->
-                        <?php require_once __DIR__ . '/components/paginacao.php'; ?>
                         
                         <table class="table table-striped">
                             <thead class="table-dark">
@@ -102,8 +100,7 @@
                             </thead>
                             <tbody>
                                 <?php foreach ($vendas as $venda): ?>
-                                    <tr>
-                                        <td class="text-center">#<?= htmlspecialchars($venda['venda_id']) ?></td>
+                                    <tr>                                        <td class="text-center">#<?= htmlspecialchars($venda['venda_id']) ?></td>
                                         <td class="text-center"><?= htmlspecialchars($venda['total_itens']) ?></td>
                                         <td class="text-center"><?= number_format($venda['valor_total'], 2, ',', '.') ?></td>
                                         <td class="text-center"><?= date('d/m/Y H:i', strtotime($venda['data_venda'])) ?></td>
