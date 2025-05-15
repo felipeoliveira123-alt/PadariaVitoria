@@ -75,8 +75,10 @@
                         </tfoot>
                     </table>
                 </div>
-            </div>
-        <?php else: ?>
+            </div>        <?php else: ?>
+            <!-- Filtros para o relatório de vendas -->
+            <?php require_once __DIR__ . '/components/filtros_relatorios.php'; ?>
+            
             <!-- Lista de vendas realizadas -->
             <div class="card">
                 <div class="card-header bg-primary text-white">
@@ -84,6 +86,9 @@
                 </div>
                 <div class="card-body">
                     <?php if (!empty($vendas)): ?>
+                        <!-- Paginação (topo) -->
+                        <?php require_once __DIR__ . '/components/paginacao.php'; ?>
+                        
                         <table class="table table-striped">
                             <thead class="table-dark">
                                 <tr>
@@ -121,8 +126,11 @@
                                 </tr>
                             </tfoot>
                         </table>
+                        
+                        <!-- Paginação (rodapé) -->
+                        <?php require_once __DIR__ . '/components/paginacao.php'; ?>
                     <?php else: ?>
-                        <div class="alert alert-info">Nenhuma venda registrada até o momento.</div>
+                        <div class="alert alert-info">Nenhuma venda registrada até o momento ou nenhuma venda corresponde aos filtros aplicados.</div>
                     <?php endif; ?>
                 </div>
             </div>

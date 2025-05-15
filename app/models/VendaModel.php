@@ -151,13 +151,98 @@ class VendaModel {
     }
     
     /**
-     * Lista todas as vendas realizadas
-     * @return array - lista de vendas
+     * Lista todas as vendas realizadas com suporte a filtros e paginação
+     * @param array $filtros - filtros aplicados (data_inicio, data_fim, vendedor, valor_min, valor_max)
+     * @param int $pagina - página atual
+     * @param int $itensPorPagina - quantidade de itens por página
+     * @return array - lista de vendas e dados de paginação
      */
-    public function listarVendas() {
-        $query = "SELECT * FROM vw_relatorio_vendas ORDER BY data_venda DESC";
-        $result = $this->conexao->query($query);
-        return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+    public function listarVendas($filtros = [], $pagina = 1, $itensPorPagina = 10) {
+        // Construir a consulta base
+        $query = "SELECT * FROM vw_relatorio_vendas WHERE 1=1";
+        $countQuery = "SELECT COUNT(*) as total FROM vw_relatorio_vendas WHERE 1=1";
+        $params = [];
+        $types = "";
+        
+        // Aplicar filtros
+        if (!empty($filtros['data_inicio'])) {
+            $query .= " AND DATE(data_venda) >= ?";
+            $countQuery .= " AND DATE(data_venda) >= ?";
+            $params[] = $filtros['data_inicio'];
+            $types .= "s";
+        }
+        
+        if (!empty($filtros['data_fim'])) {
+            $query .= " AND DATE(data_venda) <= ?";
+            $countQuery .= " AND DATE(data_venda) <= ?";
+            $params[] = $filtros['data_fim'];
+            $types .= "s";
+        }
+        
+        if (!empty($filtros['vendedor'])) {
+            $query .= " AND vendedor LIKE ?";
+            $countQuery .= " AND vendedor LIKE ?";
+            $params[] = "%" . $filtros['vendedor'] . "%";
+            $types .= "s";
+        }
+        
+        if (!empty($filtros['valor_min'])) {
+            $query .= " AND valor_total >= ?";
+            $countQuery .= " AND valor_total >= ?";
+            $params[] = $filtros['valor_min'];
+            $types .= "d";
+        }
+        
+        if (!empty($filtros['valor_max'])) {
+            $query .= " AND valor_total <= ?";
+            $countQuery .= " AND valor_total <= ?";
+            $params[] = $filtros['valor_max'];
+            $types .= "d";
+        }
+        
+        // Ordenação
+        $query .= " ORDER BY data_venda DESC";
+        
+        // Paginação
+        $offset = ($pagina - 1) * $itensPorPagina;
+        $query .= " LIMIT ?, ?";
+        $params[] = $offset;
+        $params[] = $itensPorPagina;
+        $types .= "ii";
+        
+        // Executar consulta para obter o número total de registros
+        $stmtCount = $this->conexao->prepare($countQuery);
+        if (!empty($types) && !empty($params)) {
+            $countParams = array_slice($params, 0, -2); // Remover os parâmetros de LIMIT
+            $countTypes = substr($types, 0, -2); // Remover os tipos de LIMIT
+            
+            if (!empty($countTypes)) {
+                $stmtCount->bind_param($countTypes, ...$countParams);
+            }
+        }
+        
+        $stmtCount->execute();
+        $totalRegistros = $stmtCount->get_result()->fetch_assoc()['total'];
+        $totalPaginas = ceil($totalRegistros / $itensPorPagina);
+        
+        // Executar consulta principal
+        $stmt = $this->conexao->prepare($query);
+        if (!empty($types) && !empty($params)) {
+            $stmt->bind_param($types, ...$params);
+        }
+        
+        $stmt->execute();
+        $vendas = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        
+        return [
+            'vendas' => $vendas,
+            'paginacao' => [
+                'pagina_atual' => $pagina,
+                'itens_por_pagina' => $itensPorPagina,
+                'total_registros' => $totalRegistros,
+                'total_paginas' => $totalPaginas
+            ]
+        ];
     }
     
     /**
@@ -165,8 +250,7 @@ class VendaModel {
      * @param int $id - ID da venda
      * @return array - dados da venda e seus itens
      */
-    public function buscarVendaPorId($id) {
-        // Buscar a venda
+    public function buscarVendaPorId($id) {        // Buscar a venda
         $stmt = $this->conexao->prepare("
             SELECT v.*, u.nome as usuario_nome
             FROM vendas v
@@ -178,7 +262,7 @@ class VendaModel {
         $venda = $stmt->get_result()->fetch_assoc();
         
         if (!$venda) {
-            return null;
+            return []; // Retorna array vazio em vez de null
         }
         
         // Buscar os itens da venda

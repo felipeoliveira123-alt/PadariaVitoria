@@ -3,12 +3,14 @@ USE panify;
 
 CREATE TABLE IF NOT EXISTS usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100),
-    email VARCHAR(200),
+    nome_completo VARCHAR(200),
+    usuario VARCHAR(200),
     senha VARCHAR(40),
+    data_nascimento DATE,
     data_registro TIMESTAMP,
+    primeiro_nome_mae VARCHAR(200),
 	data_alteracao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    situacao ENUM('HABILITADO', 'DESABILITADO') DEFAULT 'HABILITADO'
+    situacao ENUM('HABILITADO', 'DESABILITADO') DEFAULT 'HABILITADO'
 );
 
 CREATE TABLE produtos (

@@ -26,12 +26,12 @@ SELECT
     v.id as venda_id,
     v.data_venda,
     v.valor_total,
-    u.nome as vendedor,
+    u.nome_completo as vendedor,
     COUNT(vi.id) as total_itens,
     GROUP_CONCAT(p.nome SEPARATOR ', ') as produtos
 FROM vendas v
 JOIN usuarios u ON v.usuario_id = u.id
 JOIN venda_itens vi ON v.id = vi.venda_id
 JOIN produtos p ON vi.produto_id = p.id
-GROUP BY v.id, v.data_venda, v.valor_total, u.nome
+GROUP BY v.id, v.data_venda, v.valor_total, u.nome_completo
 ORDER BY v.data_venda DESC;

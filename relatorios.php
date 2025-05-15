@@ -20,9 +20,11 @@ try {
         $detalheVenda = $resultado['venda'];
     }
     
-    // Lista de vendas para o relatório
+    // Lista de vendas para o relatório com paginação e filtros
     $resultado = $controller->vendasReport();
     $vendas = $resultado['vendas'];
+    $paginacao = $resultado['paginacao'];
+    $filtros = $resultado['filtros'];
     
 } catch (Exception $e) {
     $erro = "Erro ao processar a operação: " . $e->getMessage();

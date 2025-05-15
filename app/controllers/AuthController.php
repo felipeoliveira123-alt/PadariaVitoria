@@ -8,11 +8,11 @@ class AuthController {
         $this->authModel = new AuthModel($conexao);
     }
 
-    public function login($email, $senha) {
-        $usuario = $this->authModel->autenticar($email, $senha);
+    public function login($usuario, $senha) {
+        $usuario = $this->authModel->autenticar($usuario, $senha);
         
         if ($usuario) {
-            $_SESSION['usuario'] = $email;
+            $_SESSION['usuario'] = $usuario;
             $_SESSION['carrinho'] = [];
             return [
                 'status' => 'success',
@@ -22,7 +22,7 @@ class AuthController {
         
         return [
             'status' => 'error',
-            'message' => 'E-mail ou senha incorretos!'
+            'message' => 'Usuário ou senha incorretos!'
         ];
     }
 

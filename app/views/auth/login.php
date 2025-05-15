@@ -26,8 +26,8 @@
             <?php endif; ?>
 
             <div class="form-floating">
-                <input type="email" class="form-control" id="email" name="email" placeholder="Digite seu email" required>
-                <label for="email">E-mail</label>
+                <input type="usuario" class="form-control" id="usuario" name="usuario" placeholder="Digite seu usuário" required>
+                <label for="usuario">Usuário</label>
             </div>
             <br>
 
@@ -39,12 +39,13 @@
 
             <div class="checkbox">
                 <label>
-                    <input type="checkbox" value="Lembrar de mim"> Lembrar login
+                    <input type="checkbox" value="Lembrar de mim" name="lembrar_login"> Lembrar login
                 </label>
             </div>
             <br>
 
             <button class="btn btn-success" type="submit">Entrar</button>
+            <a href="cadastro.html" class="btn btn-primary">Cadastre-se</a>
         </form>
     </div>
 
@@ -52,5 +53,3 @@
     <script src="/PadariaVitoria/app/public/css/bootstrap-5.3.5-dist/js/popper.min.js"></script>
     <script src="/PadariaVitoria/app/public/css/bootstrap-5.3.5-dist/js/bootstrap.min.js"></script>
 </body>
-
-</html>

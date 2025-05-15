@@ -23,7 +23,8 @@
                         <div class="col-md-4">
                             <div class="mb-3">
                                 <label for="newBatchValidity" class="form-label">Validade</label>
-                                <input type="date" class="form-control" id="newBatchValidity" required>
+                                <input type="text" class="form-control date-mask" id="newBatchValidity" 
+                                       placeholder="DD/MM/AAAA" data-inputmask="'mask': '99/99/9999'" required>
                             </div>
                         </div>
                     </div>

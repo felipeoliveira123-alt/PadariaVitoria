@@ -7,9 +7,8 @@ class AuthModel {
     }
 
     public function autenticar($email, $senha) {
-        $stmt = $this->conexao->prepare("SELECT * FROM usuarios WHERE email = ? AND senha = ?");
-        $senhaHash = md5($senha);
-        $stmt->bind_param("ss", $email, $senhaHash);
+        $stmt = $this->conexao->prepare("SELECT * FROM usuarios WHERE usuario = ? AND senha = ?");
+        $stmt->bind_param("ss", $email, $senha);
         $stmt->execute();
         $resultado = $stmt->get_result();
         

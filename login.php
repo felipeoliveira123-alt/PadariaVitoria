@@ -12,7 +12,7 @@ $controller = new AuthController($conexao);
 $erro = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $resultado = $controller->login($_POST['email'], $_POST['senha']);
+    $resultado = $controller->login($_POST['usuario'], $_POST['senha']);
     
     if ($resultado['status'] === 'success') {
         header("Location: " . $resultado['redirect']);
