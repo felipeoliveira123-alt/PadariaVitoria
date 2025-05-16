@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Controle de Ponto</title>
+  <link href="/PadariaVitoria/app/public/css/bootstrap-5.3.5-dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+  <div class="container mt-5">
+    <h2 class="text-center mb-4">Controle de Ponto</h2>
+
+    <div class="d-flex justify-content-center gap-3 mb-4">
+      <button class="btn btn-success">Registrar Entrada</button>
+      <button class="btn btn-danger">Registrar Saída</button>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="card-header bg-primary text-white">
+        Registros do Dia - <span id="dataAtual">16/05/2025</span>
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-hover table-striped mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Tipo</th>
+              <th>Horário</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Entrada</td>
+              <td>08:05:12</td>
+            </tr>
+            <tr>
+              <td>Saída</td>
+              <td>12:01:47</td>
+            </tr>
+            <tr>
+              <td>Entrada</td>
+              <td>13:15:20</td>
+            </tr>
+            <tr>
+              <td>Saída</td>
+              <td>18:02:33</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

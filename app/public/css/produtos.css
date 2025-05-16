@@ -1,0 +1,37 @@
+.editable-row td input {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.edit-actions {
+    display: none;
+}
+
+.editable-row .view-actions {
+    display: none !important;
+}
+
+.editable-row .edit-actions {
+    display: flex !important;
+}
+
+.actions-container {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.batch-row {
+    background-color: #f8f9fa;
+}
+
+.batch-details {
+    display: none;
+    margin: 10px 0;
+}
+
+.expanded .batch-details {
+    display: block;
+}
