@@ -19,9 +19,36 @@
                     <td><?= htmlspecialchars($produto['descricao'] ?? '') ?></td>
                     <td>R$ <?= number_format($produto['preco'], 2, ',', '.') ?></td>
                     <td><?= htmlspecialchars($produto['codigo_barras']) ?></td>
-                    <td><?= htmlspecialchars($produto['categoria'] ?? '') ?></td>
-                    <td><?= htmlspecialchars($produto['estoque_total']) ?></td>
-                    <td><?= $produto['proxima_validade'] ? date('d/m/Y', strtotime($produto['proxima_validade'])) : '-' ?></td>
+                    <td><?= htmlspecialchars($produto['categoria'] ?? '') ?></td>                    <td><?= htmlspecialchars($produto['estoque_total']) ?></td>
+                    <td>
+                        <?php if ($produto['proxima_validade']): 
+                            $validade = strtotime($produto['proxima_validade']);
+                            $hoje = time();
+                            $diasRestantes = ceil(($validade - $hoje) / (60 * 60 * 24));
+                            $classeValidade = '';
+                            $iconeValidade = '';
+                            
+                            if ($diasRestantes <= 0) {
+                                $classeValidade = 'text-white bg-danger';
+                                $iconeValidade = '<i class="bi bi-x-circle-fill"></i> ';
+                            } elseif ($diasRestantes <= 7) {
+                                $classeValidade = 'text-dark bg-warning';
+                                $iconeValidade = '<i class="bi bi-exclamation-triangle-fill"></i> ';
+                            } elseif ($diasRestantes <= 30) {
+                                $classeValidade = 'text-dark bg-info';
+                                $iconeValidade = '<i class="bi bi-info-circle-fill"></i> ';
+                            }
+                        ?>
+                            <span class="badge <?= $classeValidade ?>">
+                                <?= $iconeValidade ?><?= date('d/m/Y', $validade) ?>
+                                <?php if ($diasRestantes <= 30): ?>
+                                    <span class="ms-1">(<?= $diasRestantes ?> dias)</span>
+                                <?php endif; ?>
+                            </span>
+                        <?php else: ?>
+                            <span class="text-muted">-</span>
+                        <?php endif; ?>
+                    </td>
                     <td class="text-center">
                         <div class="btn-group">
                             <button class="btn btn-sm btn-primary edit-product">
@@ -36,10 +63,15 @@
                         </div>
                     </td>
                 </tr>
-            <?php endforeach; ?>
-        <?php else: ?>
+            <?php endforeach; ?>        <?php else: ?>
             <tr>
-                <td colspan="8" class="text-center">Nenhum produto encontrado.</td>
+                <td colspan="8" class="text-center">
+                    <?php if (!empty($produtos['filtros']['validade_min']) || !empty($produtos['filtros']['validade_max'])): ?>
+                        Nenhum produto encontrado com os filtros de validade aplicados.
+                    <?php else: ?>
+                        Nenhum produto encontrado.
+                    <?php endif; ?>
+                </td>
             </tr>
         <?php endif; ?>
     </tbody>

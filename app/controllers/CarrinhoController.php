@@ -42,9 +42,7 @@ class CarrinhoController {
             'message' => 'Produto adicionado ao carrinho',
             'data' => $produto
         ];
-    }
-
-    public function removerItem($id) {
+    }    public function removerItem($id) {
         $removido = $this->carrinhoModel->removerItem($id);
         
         if (!$removido) {
@@ -54,6 +52,24 @@ class CarrinhoController {
         return [
             'status' => 'success',
             'message' => 'Item removido do carrinho'
+        ];
+    }
+    
+    public function adicionarItemAvulso($nome, $preco, $quantidade = 1) {
+        if (!is_numeric($preco) || $preco <= 0) {
+            throw new Exception("O preço deve ser um valor numérico positivo.");
+        }
+        
+        if (!is_numeric($quantidade) || $quantidade <= 0) {
+            throw new Exception("A quantidade deve ser um valor numérico positivo.");
+        }
+        
+        $item = $this->carrinhoModel->adicionarItemAvulso($nome, $preco, $quantidade);
+        
+        return [
+            'status' => 'success',
+            'message' => 'Item avulso adicionado ao carrinho',
+            'data' => $item
         ];
     }
 

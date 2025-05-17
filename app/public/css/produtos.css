@@ -35,3 +35,31 @@
 .expanded .batch-details {
     display: block;
 }
+
+/* Estilos para filtro de validade */
+.filtros-rapidos {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Destacar produtos com validade próxima */
+.badge.bg-warning {
+    font-weight: bold;
+}
+
+.badge.bg-danger {
+    font-weight: bold;
+}
+
+/* Ajuste para filtros de validade em dispositivos menores */
+@media (max-width: 768px) {
+    .filtros-validade {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    #filtrar-vencendo-7-dias,
+    #filtrar-vencendo-30-dias {
+        width: 100%;
+    }
+}

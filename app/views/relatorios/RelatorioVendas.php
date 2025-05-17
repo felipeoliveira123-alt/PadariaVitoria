@@ -75,8 +75,10 @@
                         </tfoot>
                     </table>
                 </div>
-            </div>
-        <?php else: ?>
+            </div>        <?php else: ?>
+            <!-- Filtros para o relatório de vendas -->
+            <?php require_once __DIR__ . '/components/filtros_relatorios.php'; ?>
+
             <!-- Lista de vendas realizadas -->
             <div class="card">
                 <div class="card-header bg-primary text-white">
@@ -84,6 +86,7 @@
                 </div>
                 <div class="card-body">
                     <?php if (!empty($vendas)): ?>
+
                         <table class="table table-striped">
                             <thead class="table-dark">
                                 <tr>
@@ -97,8 +100,7 @@
                             </thead>
                             <tbody>
                                 <?php foreach ($vendas as $venda): ?>
-                                    <tr>
-                                        <td class="text-center">#<?= htmlspecialchars($venda['venda_id']) ?></td>
+                                    <tr>                                        <td class="text-center">#<?= htmlspecialchars($venda['venda_id']) ?></td>
                                         <td class="text-center"><?= htmlspecialchars($venda['total_itens']) ?></td>
                                         <td class="text-center"><?= number_format($venda['valor_total'], 2, ',', '.') ?></td>
                                         <td class="text-center"><?= date('d/m/Y H:i', strtotime($venda['data_venda'])) ?></td>
@@ -121,8 +123,11 @@
                                 </tr>
                             </tfoot>
                         </table>
+
+                        <!-- Paginação (rodapé) -->
+                        <?php require_once __DIR__ . '/components/paginacao.php'; ?>
                     <?php else: ?>
-                        <div class="alert alert-info">Nenhuma venda registrada até o momento.</div>
+                        <div class="alert alert-info">Nenhuma venda registrada até o momento ou nenhuma venda corresponde aos filtros aplicados.</div>
                     <?php endif; ?>
                 </div>
             </div>

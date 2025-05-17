@@ -16,14 +16,17 @@ $detalheVenda = null;
 try {
     // Exibir detalhes de uma venda específica
     if (isset($_GET['venda_id'])) {
-        $resultado = $controller->detalheVenda($_GET['venda_id']);
+        $venda_id = $_GET['venda_id'];
+        $resultado = $controller->detalheVenda($venda_id);
         $detalheVenda = $resultado['venda'];
     }
     
-    // Lista de vendas para o relatório
+    // Lista de vendas para o relatório com paginação e filtros
     $resultado = $controller->vendasReport();
     $vendas = $resultado['vendas'];
-    
+    $paginacao = $resultado['paginacao'];
+    $filtros = $resultado['filtros'];
+
 } catch (Exception $e) {
     $erro = "Erro ao processar a operação: " . $e->getMessage();
 }

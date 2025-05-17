@@ -27,8 +27,7 @@ $mensagem = "";
 $erro = "";
 $produtosSemEstoque = [];
 
-try {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+try {    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($_POST['codigo_barras'])) {
             $resultado = $controller->adicionarProduto($_POST['codigo_barras']);
             $mensagem = "Produto adicionado ao carrinho.";
@@ -36,6 +35,19 @@ try {
             // Verificar se o produto adicionado tem aviso de estoque
             if (isset($resultado['data']['estoque_aviso']) && $resultado['data']['estoque_aviso']) {
                 $mensagem .= " Atenção: Este produto está com estoque insuficiente ou zerado.";
+            }
+        }
+        
+        if (isset($_POST['item_avulso'])) {
+            $nome = $_POST['nome_item'] ? $_POST['nome_item'] : 'Item avulso';
+            $preco = $_POST['preco_item'];
+            $quantidade = $_POST['quantidade_item'] ?? 1;
+            
+            try {
+                $resultado = $controller->adicionarItemAvulso($nome, $preco, $quantidade);
+                $mensagem = "Item avulso adicionado ao carrinho.";
+            } catch (Exception $e) {
+                $erro = "Erro ao adicionar item avulso: " . $e->getMessage();
             }
         }
 

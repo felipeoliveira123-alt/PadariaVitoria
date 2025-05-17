@@ -22,14 +22,15 @@ try {
         } elseif (isset($_GET['id'])) {
             header('Content-Type: application/json');
             echo json_encode($controller->show($_GET['id']));
-            exit;
-        } else {
+            exit;        } else {
             // Obter parâmetros de filtro
             $filtros = [
                 'nome' => $_GET['filtro_nome'] ?? '',
                 'categoria' => $_GET['filtro_categoria'] ?? '',
                 'estoque_min' => $_GET['filtro_estoque_min'] ?? null,
-                'estoque_max' => $_GET['filtro_estoque_max'] ?? null
+                'estoque_max' => $_GET['filtro_estoque_max'] ?? null,
+                'validade_min' => $_GET['filtro_validade_min'] ?? null,
+                'validade_max' => $_GET['filtro_validade_max'] ?? null
             ];
             
             // Parâmetros de paginação

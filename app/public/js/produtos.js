@@ -5,6 +5,92 @@ document.addEventListener('DOMContentLoaded', function() {
         showToast(successMessage);
         sessionStorage.removeItem('productUpdateMessage');
     }
+      // Configurar validação de datas de validade
+    const validadeMinInput = document.getElementById('filtro_validade_min');
+    const validadeMaxInput = document.getElementById('filtro_validade_max');
+    
+    if (validadeMinInput && validadeMaxInput) {
+        // Garantir que a data máxima seja maior que a mínima
+        validadeMinInput.addEventListener('change', function() {
+            if (validadeMaxInput.value && this.value > validadeMaxInput.value) {
+                validadeMaxInput.value = this.value;
+            }
+        });
+        
+        validadeMaxInput.addEventListener('change', function() {
+            if (validadeMinInput.value && this.value < validadeMinInput.value) {
+                validadeMinInput.value = this.value;
+            }
+        });
+          // Filtros rápidos de validade
+        const filtrarVencendo7Dias = document.getElementById('filtrar-vencendo-7-dias');
+        const filtrarVencendo30Dias = document.getElementById('filtrar-vencendo-30-dias');
+        const limparFiltrosValidade = document.getElementById('limpar-filtros-validade');
+        
+        if (filtrarVencendo7Dias) {
+            filtrarVencendo7Dias.addEventListener('click', function() {
+                const hoje = new Date();
+                validadeMinInput.value = formatarData(hoje);
+                
+                const proximaSemana = new Date();
+                proximaSemana.setDate(hoje.getDate() + 7);
+                validadeMaxInput.value = formatarData(proximaSemana);
+                
+                // Submeter o formulário
+                validadeMaxInput.closest('form').submit();
+            });
+        }
+        
+        if (filtrarVencendo30Dias) {
+            filtrarVencendo30Dias.addEventListener('click', function() {
+                const hoje = new Date();
+                validadeMinInput.value = formatarData(hoje);
+                
+                const proximoMes = new Date();
+                proximoMes.setDate(hoje.getDate() + 30);
+                validadeMaxInput.value = formatarData(proximoMes);
+                
+                // Submeter o formulário
+                validadeMaxInput.closest('form').submit();
+            });
+        }
+        
+        if (limparFiltrosValidade) {
+            limparFiltrosValidade.addEventListener('click', function() {
+                // Limpar os campos de validade
+                validadeMinInput.value = '';
+                validadeMaxInput.value = '';
+                
+                // Verificar se outros filtros estão ativos antes de submeter
+                const form = validadeMinInput.closest('form');
+                const hasOtherFilters = Array.from(form.elements).some(element => {
+                    // Verificar se há algum outro campo preenchido além dos de validade
+                    return element.id !== 'filtro_validade_min' && 
+                           element.id !== 'filtro_validade_max' &&
+                           element.id !== 'itens_por_pagina' &&
+                           element.value;
+                });
+                
+                if (hasOtherFilters) {
+                    // Se há outros filtros, submeter o formulário
+                    form.submit();
+                } else {
+                    // Se não há outros filtros, redirecionar para a página sem filtros
+                    window.location.href = 'produtos.php';
+                }
+            });
+        }
+    }
+    
+    // Função para formatar data no formato YYYY-MM-DD
+    function formatarData(data) {
+        const ano = data.getFullYear();
+        // Adiciona um zero à esquerda se o mês for menor que 10
+        const mes = (data.getMonth() + 1).toString().padStart(2, '0');
+        // Adiciona um zero à esquerda se o dia for menor que 10
+        const dia = data.getDate().toString().padStart(2, '0');
+        return `${ano}-${mes}-${dia}`;
+    }
 
     function showAlert(message, type) {
         let alertPlaceholder = document.getElementById('alertPlaceholder');

@@ -31,18 +31,64 @@
                 </button>
                 <a href="logout.php" class="btn btn-outline-danger">Sair</a>
             </div>
+        </div>        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Adicionar Produto por Código</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" class="row g-3">
+                            <div class="col-md-8">
+                                <input type="text" name="codigo_barras" class="form-control"
+                                    placeholder="Digite o código de barras" required
+                                    pattern="[0-9]+" title="Digite apenas números">
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-primary w-100">Adicionar Produto</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Adicionar Item Avulso</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" class="row g-3">
+                            <input type="hidden" name="item_avulso" value="1">
+                              <div class="col-md-12">
+                                <label for="nome_item" class="form-label">Nome do item</label>
+                                <input type="text" id="nome_item" name="nome_item" class="form-control mb-2"
+                                    placeholder="Ex: Pão francês" value="Item avulso" maxlength="100">
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="preco_item" class="form-label">Preço</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">R$</span>
+                                    <input type="number" id="preco_item" name="preco_item" class="form-control"
+                                        placeholder="0,00" step="0.01" min="0.01" required>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-2">
+                                <label for="quantidade_item" class="form-label">Qtd</label>
+                                <input type="number" id="quantidade_item" name="quantidade_item" class="form-control"
+                                    placeholder="Qtd" value="1" min="1" max="999" required>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-success w-100">Adicionar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <form method="POST" class="row g-3 mb-4">
-            <div class="col-md-8">
-                <input type="text" name="codigo_barras" class="form-control"
-                    placeholder="Digite o código de barras" required
-                    pattern="[0-9]+" title="Digite apenas números">
-            </div>
-            <div class="col-md-4">
-                <button type="submit" class="btn btn-primary w-100">Adicionar Produto</button>
-            </div>
-        </form>
 
         <?php include_once __DIR__ . '/components/tabela_carrinho.php'; ?>
 
@@ -97,12 +143,37 @@
                     // para mostrar o toast após o recarregamento da página
                     localStorage.setItem('addedToCart', 'true');
                 });
-            }
-
-            // Verificar se um produto foi adicionado ao carrinho após o carregamento da página
+            }            // Verificar se um produto foi adicionado ao carrinho após o carregamento da página
             if (localStorage.getItem('addedToCart') === 'true') {
                 localStorage.removeItem('addedToCart');
             }
+            
+            // Mostrar toast quando mensagens de sucesso ou erro estiverem presentes
+            <?php if (!empty($mensagem)): ?>
+                const toastEl = document.getElementById('cartToast');
+                if (toastEl) {
+                    const toastBody = toastEl.querySelector('.toast-body');
+                    if (toastBody) {
+                        toastBody.textContent = "<?= htmlspecialchars($mensagem) ?>";
+                        const toast = new bootstrap.Toast(toastEl);
+                        toast.show();
+                    }
+                }
+            <?php endif; ?>
+            
+            <?php if (!empty($erro)): ?>
+                const toastEl = document.getElementById('cartToast');
+                if (toastEl) {
+                    toastEl.classList.remove('bg-primary');
+                    toastEl.classList.add('bg-danger');
+                    const toastBody = toastEl.querySelector('.toast-body');
+                    if (toastBody) {
+                        toastBody.textContent = "<?= htmlspecialchars($erro) ?>";
+                        const toast = new bootstrap.Toast(toastEl);
+                        toast.show();
+                    }
+                }
+            <?php endif; ?>
 
             // Manipular a remoção de itens do carrinho
             document.querySelectorAll('.remove-item').forEach(button => {
