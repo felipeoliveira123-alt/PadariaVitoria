@@ -9,17 +9,15 @@ class AuthController {
     }
 
     public function login($usuario, $senha) {
-        $usuario = $this->authModel->autenticar($usuario, $senha);
-        
-        if ($usuario) {
-            $_SESSION['usuario'] = $usuario;
+        $usuarioDB = $this->authModel->autenticar($usuario, $senha);
+        if ($usuarioDB && is_array($usuarioDB)) {
+            $_SESSION['usuario'] = $usuarioDB;
             $_SESSION['carrinho'] = [];
             return [
                 'status' => 'success',
                 'redirect' => '/PadariaVitoria/app/views/menu/Menu.php'
             ];
         }
-        
         return [
             'status' => 'error',
             'message' => 'Usuário ou senha incorretos!'

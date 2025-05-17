@@ -57,10 +57,14 @@
                                 <th class="text-end">Subtotal (R$)</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <?php foreach ($detalheVenda['itens'] as $item): ?>
-                                <tr>
-                                    <td><?= htmlspecialchars($item['produto_nome']) ?></td>
+                        <tbody>                            <?php foreach ($detalheVenda['itens'] as $item): ?>
+                                <tr<?= isset($item['is_avulso']) && $item['is_avulso'] == 1 ? ' class="table-light"' : '' ?>>
+                                    <td>
+                                        <?= htmlspecialchars($item['produto_nome']) ?>
+                                        <?php if (isset($item['is_avulso']) && $item['is_avulso'] == 1): ?>
+                                            <span class="badge bg-info">Item avulso</span>
+                                        <?php endif; ?>
+                                    </td>
                                     <td class="text-center"><?= htmlspecialchars($item['quantidade']) ?></td>
                                     <td class="text-end"><?= number_format($item['preco_unitario'], 2, ',', '.') ?></td>
                                     <td class="text-end"><?= number_format($item['subtotal'], 2, ',', '.') ?></td>

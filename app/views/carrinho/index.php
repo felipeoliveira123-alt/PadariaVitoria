@@ -7,16 +7,7 @@
     <link rel="stylesheet" href="/PadariaVitoria/app/public/css/bootstrap-5.3.5-dist/css/bootstrap-icons.css">
     <link rel="icon" type="image/png" href="/PadariaVitoria/app/public/images/Logotipo.png">
 </head>
-<body class="bg-light">
-    <!-- Toast para notificações -->
-    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-        <div id="cartToast" class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="d-flex">
-                <div class="toast-body"></div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-        </div>
-    </div>
+<body class="bg-light">    <!-- Toast para notificações são gerenciadas pelo componente toast_messages.php -->
 
     <div class="container mt-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -65,13 +56,12 @@
                                 <input type="text" id="nome_item" name="nome_item" class="form-control mb-2"
                                     placeholder="Ex: Pão francês" value="Item avulso" maxlength="100">
                             </div>
-                            
-                            <div class="col-md-6">
+                              <div class="col-md-6">
                                 <label for="preco_item" class="form-label">Preço</label>
                                 <div class="input-group">
                                     <span class="input-group-text">R$</span>
-                                    <input type="number" id="preco_item" name="preco_item" class="form-control"
-                                        placeholder="0,00" step="0.01" min="0.01" required>
+                                    <input type="text" id="preco_item" name="preco_item" class="form-control preco-input"
+                                        placeholder="0,00" required>
                                 </div>
                             </div>
                             
@@ -109,11 +99,11 @@
     </div>
 
     <!-- Incluir o modal de cadastro de produtos -->
-    <?php include_once __DIR__ . '/../produtos/components/modal_produto.php'; ?>
-
-    <script src="/PadariaVitoria/app/public/css/bootstrap-5.3.5-dist/js/bootstrap.bundle.min.js"></script>
+    <?php include_once __DIR__ . '/../produtos/components/modal_produto.php'; ?>    <script src="/PadariaVitoria/app/public/css/bootstrap-5.3.5-dist/js/bootstrap.bundle.min.js"></script>
     <!-- Incluir o script de produtos existente -->
     <script src="/PadariaVitoria/app/public/js/produtos.js"></script>
+    <!-- Incluir o script de formatação de preço -->
+    <script src="/PadariaVitoria/app/public/js/formato-preco.js"></script>
     
     <!-- Incluir o componente de toast para mensagens PHP -->
     <?php include_once __DIR__ . '/../components/toast_messages.php'; ?>
@@ -148,32 +138,8 @@
                 localStorage.removeItem('addedToCart');
             }
             
-            // Mostrar toast quando mensagens de sucesso ou erro estiverem presentes
-            <?php if (!empty($mensagem)): ?>
-                const toastEl = document.getElementById('cartToast');
-                if (toastEl) {
-                    const toastBody = toastEl.querySelector('.toast-body');
-                    if (toastBody) {
-                        toastBody.textContent = "<?= htmlspecialchars($mensagem) ?>";
-                        const toast = new bootstrap.Toast(toastEl);
-                        toast.show();
-                    }
-                }
-            <?php endif; ?>
-            
-            <?php if (!empty($erro)): ?>
-                const toastEl = document.getElementById('cartToast');
-                if (toastEl) {
-                    toastEl.classList.remove('bg-primary');
-                    toastEl.classList.add('bg-danger');
-                    const toastBody = toastEl.querySelector('.toast-body');
-                    if (toastBody) {
-                        toastBody.textContent = "<?= htmlspecialchars($erro) ?>";
-                        const toast = new bootstrap.Toast(toastEl);
-                        toast.show();
-                    }
-                }
-            <?php endif; ?>
+            // Não duplicamos o toast aqui, pois já está sendo gerenciado pelo componente toast_messages.php
+            // que mostra notificações no canto superior direito
 
             // Manipular a remoção de itens do carrinho
             document.querySelectorAll('.remove-item').forEach(button => {

@@ -42,7 +42,9 @@ class CarrinhoController {
             'message' => 'Produto adicionado ao carrinho',
             'data' => $produto
         ];
-    }    public function removerItem($id) {
+    }
+
+    public function removerItem($id) {
         $removido = $this->carrinhoModel->removerItem($id);
         
         if (!$removido) {
@@ -54,8 +56,13 @@ class CarrinhoController {
             'message' => 'Item removido do carrinho'
         ];
     }
-    
-    public function adicionarItemAvulso($nome, $preco, $quantidade = 1) {
+      public function adicionarItemAvulso($nome, $preco, $quantidade = 1) {
+        // Se o preço contiver vírgula, converte para o formato com ponto
+        if (is_string($preco) && strpos($preco, ',') !== false) {
+            $preco = str_replace('.', '', $preco); // Remove pontos de milhar
+            $preco = str_replace(',', '.', $preco); // Substitui vírgula por ponto
+        }
+        
         if (!is_numeric($preco) || $preco <= 0) {
             throw new Exception("O preço deve ser um valor numérico positivo.");
         }

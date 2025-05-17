@@ -1,5 +1,5 @@
 <?php
-session_start();
+
 
 class AuthModel {
     private $conexao;
@@ -16,11 +16,8 @@ class AuthModel {
 
         if ($resultado && $resultado->num_rows > 0) {
             $usuarioDB = $resultado->fetch_assoc();
-
-            if (password_verify($senha, $usuarioDB['senha'])) {
-                $_SESSION['usuario'] = $usuario;
-                $_SESSION['carrinho'] = [];
-
+            // Verificar se a senha está armazenada como hash ou como texto simples
+            if (password_verify($senha, $usuarioDB['senha']) || $senha === $usuarioDB['senha']) {
                 // Lembrar login
                 if (isset($_POST['lembrar_login'])) {
                     setcookie('usuario_salvo', $usuario, time() + (86400 * 30), "/");
@@ -29,11 +26,9 @@ class AuthModel {
                     setcookie('usuario_salvo', '', time() - 3600, "/");
                     setcookie('senha_salva', '', time() - 3600, "/");
                 }
-
-                return ['status' => 'success', 'redirect' => 'app/views/menu/Menu.php'];
+                return $usuarioDB;
             }
         }
-
-        return ['status' => 'error', 'message' => 'Usuário ou senha inválidos.'];
+        return false;
     }
 }

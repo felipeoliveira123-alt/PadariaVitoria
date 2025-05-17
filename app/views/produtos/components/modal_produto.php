@@ -18,10 +18,9 @@
                     <div class="mb-3">
                         <label for="productDescription" class="form-label">Descrição</label>
                         <textarea class="form-control" id="productDescription" name="descricao" rows="3"></textarea>
-                    </div>
-                    <div class="mb-3">
+                    </div>                    <div class="mb-3">
                         <label for="productPrice" class="form-label">Preço</label>
-                        <input type="number" class="form-control" id="productPrice" name="preco" step="0.01" min="0" required>
+                        <input type="text" class="form-control preco-input" id="productPrice" name="preco" required>
                         <div class="invalid-feedback">
                             Por favor, informe um preço válido.
                         </div>

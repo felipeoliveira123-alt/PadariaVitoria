@@ -158,11 +158,16 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 const response = await fetch(`produtos.php?id=${productId}`);
                 if (!response.ok) throw new Error('Erro ao carregar produto');
-                const produto = await response.json();
-
-                document.getElementById('productName').value = produto.nome;
+                const produto = await response.json();                document.getElementById('productName').value = produto.nome;
                 document.getElementById('productDescription').value = produto.descricao || '';
-                document.getElementById('productPrice').value = produto.preco;
+                
+                // Formatar o preço com vírgula como separador decimal
+                const preco = parseFloat(produto.preco);
+                document.getElementById('productPrice').value = preco.toLocaleString('pt-BR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+                
                 document.getElementById('productBarcode').value = produto.codigo_barras;
                 document.getElementById('productCategory').value = produto.categoria || '';
 
@@ -187,11 +192,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         return;
                     }
 
-                    if (confirm('Tem certeza que deseja salvar as alterações?')) {
-                        const productData = {
+                    if (confirm('Tem certeza que deseja salvar as alterações?')) {                        const productData = {
                             nome: document.getElementById('productName').value,
                             descricao: document.getElementById('productDescription').value,
-                            preco: parseFloat(document.getElementById('productPrice').value),
+                            preco: parseFloat(document.getElementById('productPrice').dataset.valorNumerico || 
+                                    document.getElementById('productPrice').value.replace('.', '').replace(',', '.')),
                             codigo_barras: document.getElementById('productBarcode').value,
                             categoria: document.getElementById('productCategory').value
                         };
@@ -233,12 +238,11 @@ document.addEventListener('DOMContentLoaded', function() {
             e.stopPropagation();
             this.classList.add('was-validated');
             return;
-        }
-
-        const productData = {
+        }        const productData = {
             nome: document.getElementById('productName').value,
             descricao: document.getElementById('productDescription').value,
-            preco: parseFloat(document.getElementById('productPrice').value),
+            preco: parseFloat(document.getElementById('productPrice').dataset.valorNumerico || 
+                   document.getElementById('productPrice').value.replace('.', '').replace(',', '.')),
             codigo_barras: document.getElementById('productBarcode').value,
             categoria: document.getElementById('productCategory').value
         };

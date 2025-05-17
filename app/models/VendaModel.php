@@ -297,12 +297,16 @@ class VendaModel {
         if (!$venda) {
             return []; // Retorna array vazio em vez de null
         }
-        
-        // Buscar os itens da venda
+          // Buscar os itens da venda, incluindo itens avulsos
         $stmt = $this->conexao->prepare("
-            SELECT vi.*, p.nome as produto_nome
+            SELECT 
+                vi.*,
+                CASE 
+                    WHEN vi.is_avulso = 1 THEN vi.nome_item
+                    ELSE p.nome
+                END as produto_nome
             FROM venda_itens vi
-            JOIN produtos p ON vi.produto_id = p.id
+            LEFT JOIN produtos p ON vi.produto_id = p.id
             WHERE vi.venda_id = ?
         ");
         $stmt->bind_param("i", $id);
