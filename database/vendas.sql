@@ -7,6 +7,8 @@ CREATE TABLE IF NOT EXISTS vendas (
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 );
 
+drop table vendas;
+
 CREATE TABLE IF NOT EXISTS venda_itens (
     id INT AUTO_INCREMENT PRIMARY KEY,
     venda_id INT NOT NULL,
@@ -35,3 +37,5 @@ JOIN venda_itens vi ON v.id = vi.venda_id
 JOIN produtos p ON vi.produto_id = p.id
 GROUP BY v.id, v.data_venda, v.valor_total, u.nome_completo
 ORDER BY v.data_venda DESC;
+
+-- drop view vw_relatorio_vendas

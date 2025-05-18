@@ -14,14 +14,13 @@ class ProdutoModel {
      * @param int $pagina - Número da página atual (começando em 1)
      * @param int $itensPorPagina - Quantidade de itens por página
      * @return array - Array com os produtos e informações de paginação
-     */
-    public function listarTodos($filtros = [], $pagina = 1, $itensPorPagina = 10) {
+     */    public function listarTodos($filtros = [], $pagina = 1, $itensPorPagina = 10) {
         // Construir a query base
         $query = "
             SELECT p.*, COALESCE(SUM(pl.quantidade), 0) as estoque_total,
                    MIN(pl.validade) as proxima_validade
             FROM produtos p
-            LEFT JOIN produto_lotes pl ON p.id = pl.produto_id AND pl.ativo = 1
+            LEFT JOIN produto_lotes pl ON p.id = pl.produto_id AND pl.ativo = 1 AND pl.quantidade > 0
             WHERE p.ativo = 1";
         
         $params = [];
@@ -42,8 +41,7 @@ class ProdutoModel {
         
         // Finalizar a query para contagem total
         $queryCount = $query . " GROUP BY p.id";
-        
-        // Adicionar filtros de estoque após GROUP BY
+          // Adicionar filtros de estoque após GROUP BY
         if (isset($filtros['estoque_min']) && is_numeric($filtros['estoque_min'])) {
             $queryCount .= " HAVING estoque_total >= ?";
             $params[] = $filtros['estoque_min'];
@@ -58,6 +56,27 @@ class ProdutoModel {
             }
             $params[] = $filtros['estoque_max'];
             $types .= "d";
+        }
+        
+        // Adicionar filtros de validade
+        if (!empty($filtros['validade_min'])) {
+            if (strpos($queryCount, "HAVING") !== false) {
+                $queryCount .= " AND proxima_validade >= ?";
+            } else {
+                $queryCount .= " HAVING proxima_validade >= ?";
+            }
+            $params[] = $filtros['validade_min'];
+            $types .= "s";
+        }
+        
+        if (!empty($filtros['validade_max'])) {
+            if (strpos($queryCount, "HAVING") !== false) {
+                $queryCount .= " AND proxima_validade <= ?";
+            } else {
+                $queryCount .= " HAVING proxima_validade <= ?";
+            }
+            $params[] = $filtros['validade_max'];
+            $types .= "s";
         }
         
         // Contar o total de registros para paginação

@@ -6,9 +6,9 @@
 
   <title>Recuperação de Senha</title>
 
-  <link href="css/bootstrap-5.3.5-dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="css/bootstrap-5.3.5-dist/css/estilo.css">
-  <link rel="icon" type="image/png" href="images/Logotipo.png">
+  <link href="/PadariaVitoria/app/public/css/bootstrap-5.3.5-dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/PadariaVitoria/app/public/css/bootstrap-5.3.5-dist/css/estilo.css">
+  <link rel="icon" type="image/png" href="/PadariaVitoria/app/public/images/Logotipo.png?v=1">
 </head>
 <body>
 
@@ -20,7 +20,7 @@
           <div class="card-body">
             <h3 class="card-title text-center mb-4">Recuperação de Senha</h3>
 
-            <form action="verificar_perguntas.php" method="POST">
+            <form action="/PadariaVitoria/app/views/recuperacao_senha/verificar_perguntas.php" method="POST">
               <div class="mb-3">
                 <label for="nome_completo" class="form-label">Nome Completo</label>
                 <input type="text" class="form-control" id="nome_completo" name="nome_completo" required>
@@ -41,7 +41,7 @@
               </div>
             </form>
 
-            <p class="text-center mt-3">Lembrou sua senha? <a href="index.php">Voltar ao login</a></p>
+            <p class="text-center mt-3">Lembrou sua senha? <a href="/PadariaVitoria/index.php">Voltar ao login</a></p>
           </div>
         </div>
 

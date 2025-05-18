@@ -12,7 +12,7 @@ class LoteModel {
             FROM produto_lotes pl
             JOIN produtos p ON p.id = pl.produto_id
             WHERE pl.produto_id = ? AND pl.ativo = 1
-            ORDER BY pl.validade ASC");
+            ORDER BY pl.data_entrada ASC");
         $stmt->bind_param("i", $produtoId);
         $stmt->execute();
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);

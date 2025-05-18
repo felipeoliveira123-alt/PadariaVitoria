@@ -29,8 +29,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     } else {
         $erro = $resultado['message'];
+        // Adicionar o erro para ser exibido na view
     }
 }
 
 // Exibe a view de login
-require_once __DIR__ . '/app/views/auth/login.php';
+require_once __DIR__ . '/auth/login.php';

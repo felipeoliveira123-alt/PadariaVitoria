@@ -5,6 +5,92 @@ document.addEventListener('DOMContentLoaded', function() {
         showToast(successMessage);
         sessionStorage.removeItem('productUpdateMessage');
     }
+      // Configurar validação de datas de validade
+    const validadeMinInput = document.getElementById('filtro_validade_min');
+    const validadeMaxInput = document.getElementById('filtro_validade_max');
+    
+    if (validadeMinInput && validadeMaxInput) {
+        // Garantir que a data máxima seja maior que a mínima
+        validadeMinInput.addEventListener('change', function() {
+            if (validadeMaxInput.value && this.value > validadeMaxInput.value) {
+                validadeMaxInput.value = this.value;
+            }
+        });
+        
+        validadeMaxInput.addEventListener('change', function() {
+            if (validadeMinInput.value && this.value < validadeMinInput.value) {
+                validadeMinInput.value = this.value;
+            }
+        });
+          // Filtros rápidos de validade
+        const filtrarVencendo7Dias = document.getElementById('filtrar-vencendo-7-dias');
+        const filtrarVencendo30Dias = document.getElementById('filtrar-vencendo-30-dias');
+        const limparFiltrosValidade = document.getElementById('limpar-filtros-validade');
+        
+        if (filtrarVencendo7Dias) {
+            filtrarVencendo7Dias.addEventListener('click', function() {
+                const hoje = new Date();
+                validadeMinInput.value = formatarData(hoje);
+                
+                const proximaSemana = new Date();
+                proximaSemana.setDate(hoje.getDate() + 7);
+                validadeMaxInput.value = formatarData(proximaSemana);
+                
+                // Submeter o formulário
+                validadeMaxInput.closest('form').submit();
+            });
+        }
+        
+        if (filtrarVencendo30Dias) {
+            filtrarVencendo30Dias.addEventListener('click', function() {
+                const hoje = new Date();
+                validadeMinInput.value = formatarData(hoje);
+                
+                const proximoMes = new Date();
+                proximoMes.setDate(hoje.getDate() + 30);
+                validadeMaxInput.value = formatarData(proximoMes);
+                
+                // Submeter o formulário
+                validadeMaxInput.closest('form').submit();
+            });
+        }
+        
+        if (limparFiltrosValidade) {
+            limparFiltrosValidade.addEventListener('click', function() {
+                // Limpar os campos de validade
+                validadeMinInput.value = '';
+                validadeMaxInput.value = '';
+                
+                // Verificar se outros filtros estão ativos antes de submeter
+                const form = validadeMinInput.closest('form');
+                const hasOtherFilters = Array.from(form.elements).some(element => {
+                    // Verificar se há algum outro campo preenchido além dos de validade
+                    return element.id !== 'filtro_validade_min' && 
+                           element.id !== 'filtro_validade_max' &&
+                           element.id !== 'itens_por_pagina' &&
+                           element.value;
+                });
+                
+                if (hasOtherFilters) {
+                    // Se há outros filtros, submeter o formulário
+                    form.submit();
+                } else {
+                    // Se não há outros filtros, redirecionar para a página sem filtros
+                    window.location.href = 'produtos.php';
+                }
+            });
+        }
+    }
+    
+    // Função para formatar data no formato YYYY-MM-DD
+    function formatarData(data) {
+        const ano = data.getFullYear();
+        // Adiciona um zero à esquerda se o mês for menor que 10
+        const mes = (data.getMonth() + 1).toString().padStart(2, '0');
+        // Adiciona um zero à esquerda se o dia for menor que 10
+        const dia = data.getDate().toString().padStart(2, '0');
+        return `${ano}-${mes}-${dia}`;
+    }
 
     function showAlert(message, type) {
         let alertPlaceholder = document.getElementById('alertPlaceholder');
@@ -72,11 +158,16 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 const response = await fetch(`produtos.php?id=${productId}`);
                 if (!response.ok) throw new Error('Erro ao carregar produto');
-                const produto = await response.json();
-
-                document.getElementById('productName').value = produto.nome;
+                const produto = await response.json();                document.getElementById('productName').value = produto.nome;
                 document.getElementById('productDescription').value = produto.descricao || '';
-                document.getElementById('productPrice').value = produto.preco;
+                
+                // Formatar o preço com vírgula como separador decimal
+                const preco = parseFloat(produto.preco);
+                document.getElementById('productPrice').value = preco.toLocaleString('pt-BR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+                
                 document.getElementById('productBarcode').value = produto.codigo_barras;
                 document.getElementById('productCategory').value = produto.categoria || '';
 
@@ -101,11 +192,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         return;
                     }
 
-                    if (confirm('Tem certeza que deseja salvar as alterações?')) {
-                        const productData = {
+                    if (confirm('Tem certeza que deseja salvar as alterações?')) {                        const productData = {
                             nome: document.getElementById('productName').value,
                             descricao: document.getElementById('productDescription').value,
-                            preco: parseFloat(document.getElementById('productPrice').value),
+                            preco: parseFloat(document.getElementById('productPrice').dataset.valorNumerico || 
+                                    document.getElementById('productPrice').value.replace('.', '').replace(',', '.')),
                             codigo_barras: document.getElementById('productBarcode').value,
                             categoria: document.getElementById('productCategory').value
                         };
@@ -147,12 +238,11 @@ document.addEventListener('DOMContentLoaded', function() {
             e.stopPropagation();
             this.classList.add('was-validated');
             return;
-        }
-
-        const productData = {
+        }        const productData = {
             nome: document.getElementById('productName').value,
             descricao: document.getElementById('productDescription').value,
-            preco: parseFloat(document.getElementById('productPrice').value),
+            preco: parseFloat(document.getElementById('productPrice').dataset.valorNumerico || 
+                   document.getElementById('productPrice').value.replace('.', '').replace(',', '.')),
             codigo_barras: document.getElementById('productBarcode').value,
             categoria: document.getElementById('productCategory').value
         };

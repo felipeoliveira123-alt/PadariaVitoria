@@ -1,10 +1,9 @@
 <div class="card">
     <div class="card-body">
-        <table class="table table-hover mb-0">
-            <thead class="table-dark">
+        <table class="table table-hover mb-0">            <thead class="table-dark">
                 <tr>
                     <th>Produto</th>
-                    <th class="text-end">Preço (R$)</th>
+                    <th class="text-end">Preço</th>
                     <th class="text-center">Ações</th>
                 </tr>
             </thead>
@@ -21,11 +20,26 @@
                             // If no ID is found, use the array index as a fallback
                             $item_id = $key;
                         }
-                        ?>
-                        <tr data-id="<?= htmlspecialchars($item_id) ?>">
-                            <td><?= htmlspecialchars($item['name'] ?? $item['nome']) ?></td>
+                        ?>                <tr data-id="<?= htmlspecialchars($item_id) ?>" class="<?= isset($item['tipo']) && $item['tipo'] == 'avulso' ? 'table-light' : '' ?>">
+                            <td>
+                                <?= htmlspecialchars($item['name'] ?? $item['nome']) ?>
+                                <?php if (isset($item['tipo']) && $item['tipo'] == 'avulso'): ?>
+                                    <span class="badge bg-info">Item avulso</span>
+                                <?php endif; ?>
+                                <?php if (isset($item['quantidade']) && $item['quantidade'] > 1): ?>
+                                    <small class="text-muted ms-2">
+                                        (<?= $item['quantidade'] ?> unid.)
+                                    </small>
+                                <?php endif; ?>
+                            </td>
                             <td class="text-end">
-                                <?= number_format($item['price'] ?? $item['preco'], 2, ',', '.') ?>
+                                R$ <?= number_format($item['price'] ?? $item['preco'], 2, ',', '.') ?>
+                                <?php if (isset($item['quantidade']) && $item['quantidade'] > 1): ?>
+                                    <br>
+                                    <small class="text-muted">
+                                        Total: R$ <?= number_format(($item['price'] ?? $item['preco']) * $item['quantidade'], 2, ',', '.') ?>
+                                    </small>
+                                <?php endif; ?>
                             </td>
                             <td class="text-center">
                                 <button class="btn btn-sm btn-danger remove-item">

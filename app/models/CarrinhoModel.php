@@ -6,15 +6,35 @@ class CarrinhoModel {
         }
         $_SESSION['carrinho'][] = $produto;
     }
+    
+    public function adicionarItemAvulso($nome, $preco, $quantidade = 1) {
+        if (!isset($_SESSION['carrinho'])) {
+            $_SESSION['carrinho'] = [];
+        }
+        
+        // Cria um ID único para o item avulso
+        $id = 'avulso_' . time() . '_' . mt_rand(100, 999);
+        
+        $item = [
+            'id' => $id,
+            'nome' => $nome ? $nome : 'Item avulso',
+            'preco' => (float)$preco,
+            'quantidade' => (int)$quantidade,
+            'tipo' => 'avulso'
+        ];
+        
+        $_SESSION['carrinho'][] = $item;
+        return $item;
+    }
 
     public function getItens() {
         return $_SESSION['carrinho'] ?? [];
-    }
-
-    public function getTotal() {
+    }    public function getTotal() {
         $total = 0;
         foreach ($this->getItens() as $item) {
-            $total += $item['price'] ?? $item['preco'];
+            $preco = $item['price'] ?? $item['preco'];
+            $quantidade = $item['quantidade'] ?? 1;
+            $total += $preco * $quantidade;
         }
         return $total;
     }

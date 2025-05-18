@@ -22,14 +22,15 @@ try {
         } elseif (isset($_GET['id'])) {
             header('Content-Type: application/json');
             echo json_encode($controller->show($_GET['id']));
-            exit;
-        } else {
+            exit;        } else {
             // Obter parâmetros de filtro
             $filtros = [
                 'nome' => $_GET['filtro_nome'] ?? '',
                 'categoria' => $_GET['filtro_categoria'] ?? '',
                 'estoque_min' => $_GET['filtro_estoque_min'] ?? null,
-                'estoque_max' => $_GET['filtro_estoque_max'] ?? null
+                'estoque_max' => $_GET['filtro_estoque_max'] ?? null,
+                'validade_min' => $_GET['filtro_validade_min'] ?? null,
+                'validade_max' => $_GET['filtro_validade_max'] ?? null
             ];
             
             // Parâmetros de paginação
@@ -40,10 +41,19 @@ try {
             $itensPorPagina = max(5, min(50, $itensPorPagina));
             
             $produtos = $controller->index($filtros, $pagina, $itensPorPagina);
-        }
-    } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        }    } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $dadosJson = file_get_contents('php://input');
         $dados = json_decode($dadosJson, true);
+        
+        // Verifica se o preço contém vírgula e converte para o formato correto
+        if (isset($dados['preco']) && is_string($dados['preco'])) {
+            if (strpos($dados['preco'], ',') !== false) {
+                $dados['preco'] = str_replace('.', '', $dados['preco']); // Remove pontos de milhar
+                $dados['preco'] = str_replace(',', '.', $dados['preco']); // Substitui vírgula por ponto
+            }
+            
+            $dados['preco'] = (float) $dados['preco'];
+        }
         
         header('Content-Type: application/json');
         if (isset($dados['tipo']) && $dados['tipo'] === 'lote') {
@@ -51,11 +61,20 @@ try {
         } else {
             echo json_encode($controller->store($dados));
         }
-        exit;
-    } elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
+        exit;    } elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         if (isset($_GET['id'])) {
             $dadosJson = file_get_contents('php://input');
             $dados = json_decode($dadosJson, true);
+            
+            // Verifica se o preço contém vírgula e converte para o formato correto
+            if (isset($dados['preco']) && is_string($dados['preco'])) {
+                if (strpos($dados['preco'], ',') !== false) {
+                    $dados['preco'] = str_replace('.', '', $dados['preco']); // Remove pontos de milhar
+                    $dados['preco'] = str_replace(',', '.', $dados['preco']); // Substitui vírgula por ponto
+                }
+                
+                $dados['preco'] = (float) $dados['preco'];
+            }
             
             header('Content-Type: application/json');
             echo json_encode($controller->update($_GET['id'], $dados));

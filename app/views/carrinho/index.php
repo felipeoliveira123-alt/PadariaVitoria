@@ -7,16 +7,7 @@
     <link rel="stylesheet" href="/PadariaVitoria/app/public/css/bootstrap-5.3.5-dist/css/bootstrap-icons.css">
     <link rel="icon" type="image/png" href="/PadariaVitoria/app/public/images/Logotipo.png">
 </head>
-<body class="bg-light">
-    <!-- Toast para notificações -->
-    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-        <div id="cartToast" class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="d-flex">
-                <div class="toast-body"></div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-        </div>
-    </div>
+<body class="bg-light">    <!-- Toast para notificações são gerenciadas pelo componente toast_messages.php -->
 
     <div class="container mt-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -31,18 +22,63 @@
                 </button>
                 <a href="logout.php" class="btn btn-outline-danger">Sair</a>
             </div>
+        </div>        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Adicionar Produto por Código</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" class="row g-3">
+                            <div class="col-md-8">
+                                <input type="text" name="codigo_barras" class="form-control"
+                                    placeholder="Digite o código de barras" required
+                                    pattern="[0-9]+" title="Digite apenas números">
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-primary w-100">Adicionar Produto</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Adicionar Item Avulso</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" class="row g-3">
+                            <input type="hidden" name="item_avulso" value="1">
+                              <div class="col-md-12">
+                                <label for="nome_item" class="form-label">Nome do item</label>
+                                <input type="text" id="nome_item" name="nome_item" class="form-control mb-2"
+                                    placeholder="Ex: Pão francês" value="Item avulso" maxlength="100">
+                            </div>
+                              <div class="col-md-6">
+                                <label for="preco_item" class="form-label">Preço</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">R$</span>
+                                    <input type="text" id="preco_item" name="preco_item" class="form-control preco-input"
+                                        placeholder="0,00" required>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-2">
+                                <label for="quantidade_item" class="form-label">Qtd</label>
+                                <input type="number" id="quantidade_item" name="quantidade_item" class="form-control"
+                                    placeholder="Qtd" value="1" min="1" max="999" required>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-success w-100">Adicionar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <form method="POST" class="row g-3 mb-4">
-            <div class="col-md-8">
-                <input type="text" name="codigo_barras" class="form-control"
-                    placeholder="Digite o código de barras" required
-                    pattern="[0-9]+" title="Digite apenas números">
-            </div>
-            <div class="col-md-4">
-                <button type="submit" class="btn btn-primary w-100">Adicionar Produto</button>
-            </div>
-        </form>
 
         <?php include_once __DIR__ . '/components/tabela_carrinho.php'; ?>
 
@@ -63,11 +99,11 @@
     </div>
 
     <!-- Incluir o modal de cadastro de produtos -->
-    <?php include_once __DIR__ . '/../produtos/components/modal_produto.php'; ?>
-
-    <script src="/PadariaVitoria/app/public/css/bootstrap-5.3.5-dist/js/bootstrap.bundle.min.js"></script>
+    <?php include_once __DIR__ . '/../produtos/components/modal_produto.php'; ?>    <script src="/PadariaVitoria/app/public/css/bootstrap-5.3.5-dist/js/bootstrap.bundle.min.js"></script>
     <!-- Incluir o script de produtos existente -->
     <script src="/PadariaVitoria/app/public/js/produtos.js"></script>
+    <!-- Incluir o script de formatação de preço -->
+    <script src="/PadariaVitoria/app/public/js/formato-preco.js"></script>
     
     <!-- Incluir o componente de toast para mensagens PHP -->
     <?php include_once __DIR__ . '/../components/toast_messages.php'; ?>
@@ -97,12 +133,13 @@
                     // para mostrar o toast após o recarregamento da página
                     localStorage.setItem('addedToCart', 'true');
                 });
-            }
-
-            // Verificar se um produto foi adicionado ao carrinho após o carregamento da página
+            }            // Verificar se um produto foi adicionado ao carrinho após o carregamento da página
             if (localStorage.getItem('addedToCart') === 'true') {
                 localStorage.removeItem('addedToCart');
             }
+            
+            // Não duplicamos o toast aqui, pois já está sendo gerenciado pelo componente toast_messages.php
+            // que mostra notificações no canto superior direito
 
             // Manipular a remoção de itens do carrinho
             document.querySelectorAll('.remove-item').forEach(button => {

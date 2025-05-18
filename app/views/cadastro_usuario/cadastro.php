@@ -8,7 +8,7 @@
   <title>Cadastro</title>
 
   <link href="/PadariaVitoria/app/public/css/bootstrap-5.3.5-dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="app\public\css\bootstrap-5.3.5-dist\css\estilo.css">
+  <link rel="stylesheet" href="/PadariaVitoria/app/public/css/bootstrap-5.3.5-dist/css/estilo.css">
   <link rel="icon" type="image/png" href="/PadariaVitoria/app/public/images/Logotipo.png?v=1">
 
 </head>
